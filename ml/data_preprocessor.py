@@ -23,22 +23,21 @@ class DataPreprocessor:
             logger.error(f"Failed to load data from {self.filepath}: {e}")
         return self.data
 
-    def describe_and_handle_missing_values(self):
+    def describe_data(self):
+        """Provides a description of the dataset."""
+        description = str(self.data.describe())
+        logger.info("Dataset Statistics:\n" + description)
+
+    def handle_missing_values(self):
         """Checks for and handles missing values in the dataset."""
-        logger.info("Checking and handling missing values.")
-
-        # Print initial dataset statistics
-        logger.info("Initial Dataset Statistics:\n" + str(self.data.describe()))
-
         # Check for missing values
-        if self.data.isnull().values.any():
-            logger.warning("Missing values found in the dataset.")
+        missing_values = self.data.isnull().sum()
+        if missing_values.any():
+            logger.warning(f"Missing values found in the dataset:\n{missing_values}")
 
-            # Handling missing values
+            # Handling missing values by filling with mean
             self.data.fillna(self.data.mean(), inplace=True)
-
             logger.info("Missing values have been handled.")
-            logger.info("Dataset statistics after handling missing values:\n" + str(self.data.describe()))
         else:
             logger.info("No missing values found in the dataset.")
 
@@ -47,11 +46,7 @@ class DataPreprocessor:
         try:
             scaler = MinMaxScaler()
             self.data[columns] = scaler.fit_transform(self.data[columns])
-
-            # Convert the description to a string using `str()` and log it
-            normalized_description = str(self.data[columns].describe())
-            logger.info(
-                "Data normalization completed successfully. Normalized data statistics:\n" + normalized_description)
+            logger.info("Data normalization completed successfully.")
         except Exception as e:
             logger.error(f"Error during data normalization: {e}")
         return self.data

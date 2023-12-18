@@ -3,6 +3,9 @@ import joblib
 import logging
 import numpy as np
 
+from sklearn.base import clone
+from sklearn.utils import resample
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,6 +26,7 @@ class ModelRegistry:
 class ModelTrainer:
     def __init__(self, model_registry):
         self.model_registry = model_registry
+        self.bagging_models = {}
 
     def train_model(self, model_name, X_train, y_train):
         try:
@@ -49,6 +53,40 @@ class ModelTrainer:
             logger.info(f"{model_name} model saved to {file_path}")
         except Exception as e:
             logger.error(f"Error saving the {model_name} model: {e}")
+
+    def train_model_with_bagging(self, model_name, X_train, y_train, n_bootstrap=10):
+        try:
+            model = self.model_registry.get(model_name)
+            bagging_models = []
+
+            for i in range(n_bootstrap):
+                # Creating bootstrap sample
+                X_bootstrap, y_bootstrap = resample(X_train, y_train)
+
+                # Cloning the model to train on each bootstrap separately
+                cloned_model = clone(model)
+                cloned_model.fit(X_bootstrap, y_bootstrap)
+                bagging_models.append(cloned_model)
+
+            self.bagging_models[model_name] = bagging_models
+            logger.info(f"{model_name} model training with bagging completed. {n_bootstrap} models trained.")
+
+        except Exception as e:
+            logger.error(f"Error during {model_name} model training with bagging: {e}")
+
+    def predict_with_bagging(self, model_name, X_test):
+        try:
+            models = self.bagging_models.get(model_name, [])
+            if not models:
+                raise ValueError(f"No bagging models found for {model_name}. Ensure the model is trained with bagging.")
+
+            predictions = [model.predict(X_test) for model in models]
+            avg_prediction = np.mean(predictions, axis=0)
+            return avg_prediction
+
+        except Exception as e:
+            logger.error(f"Error during prediction with {model_name} bagging models: {e}")
+            return None
 
 
 

@@ -3,6 +3,6 @@
     "TARGET_COLUMN": "Total density",
     "TEST_SIZE": 0.2,
     "RANDOM_STATE": 42,
-    "COLUMNS_TO_NORMALIZE": ["Laser Power", "Gas flow rate in m/s", "Laser Speed"],
+    "COLUMNS_TO_NORMALIZE": ["Laser Power", "Hatch Distance", "Gas flow rate in m/s", "Laser Speed"],
     "HEATMAP_SAVE_PATH": "/Users/loganvega/Desktop/am_data_driven_work_flow/report/feature_correlation_heatmap.png"
 }

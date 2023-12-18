@@ -3,6 +3,7 @@ from data_preprocessor import DataPreprocessor
 from feature_selector import FeatureSelectorAM
 from ml_trainer import ModelTrainer,ModelRegistry
 from ml_evaluator import ModelEvaluator
+from sklearn.linear_model import Lasso
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
@@ -22,6 +23,7 @@ with open('config.json', 'r') as file:
 model_registry = ModelRegistry()
 model_registry.register('RandomForest', RandomForestRegressor(n_estimators=100, random_state=42))
 model_registry.register('LinearRegression', LinearRegression())
+model_registry.register('Lasso', Lasso(alpha=0.1))  # Add Lasso Regression
 
 # Initialize and use DataPreprocessor
 preprocessor = DataPreprocessor(config)
@@ -68,6 +70,47 @@ lr_report = lr_evaluator.generate_report(X_train, y_train, X_test, y_test)
 logger.info("Linear Regression Model Performance Report:\n" + lr_report)
 
 
+# Train models with bagging
+trainer.train_model_with_bagging('RandomForest', X_train, y_train, n_bootstrap=10)
+trainer.train_model_with_bagging('LinearRegression', X_train, y_train, n_bootstrap=10)
+
+# Make predictions with the bagged models
+rf_predictions = trainer.predict_with_bagging('RandomForest', X_test)
+lr_predictions = trainer.predict_with_bagging('LinearRegression', X_test)
+
+# Initialize ModelEvaluator for each bagged model
+rf_bagged_evaluator = ModelEvaluator(trainer.bagging_models['RandomForest'])
+lr_bagged_evaluator = ModelEvaluator(trainer.bagging_models['LinearRegression'])
+
+# Generate and log performance reports
+rf_bagged_report = rf_bagged_evaluator.generate_report_bagging(X_train, y_train, X_test, y_test)
+logger.info("Random Forest Bagging Model Performance Report:\n" + rf_bagged_report)
+
+lr_bagged_report = lr_bagged_evaluator.generate_report_bagging(X_train, y_train, X_test, y_test)
+logger.info("Linear Regression Bagging Model Performance Report:\n" + lr_bagged_report)
+
+
+# Train and validate the Lasso model
+trainer.train_model('Lasso', X_train, y_train)
+trainer.validate_model('Lasso', X_test, y_test, cv_folds=5)
+
+# Initialize and use ModelEvaluator for Lasso
+lasso_evaluator = ModelEvaluator(model_registry.get('Lasso'))
+lasso_report = lasso_evaluator.generate_report(X_train, y_train, X_test, y_test)
+logger.info("Lasso Regression Model Performance Report:\n" + lasso_report)
+
+# Train Lasso model with bagging
+trainer.train_model_with_bagging('Lasso', X_train, y_train, n_bootstrap=10)
+
+# Make predictions with the bagged Lasso model
+lasso_predictions = trainer.predict_with_bagging('Lasso', X_test)
+
+# Initialize ModelEvaluator for bagged Lasso model
+lasso_bagged_evaluator = ModelEvaluator(trainer.bagging_models['Lasso'])
+
+# Generate and log performance report for bagged Lasso
+lasso_bagged_report = lasso_bagged_evaluator.generate_report_bagging(X_train, y_train, X_test, y_test)
+logger.info("Lasso Regression Bagging Model Performance Report:\n" + lasso_bagged_report)
 
 
 

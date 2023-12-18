@@ -1,6 +1,8 @@
 {
     "DATA_FILE_PATH": "/Users/loganvega/Desktop/am_data_driven_work_flow/data/AssessmentData.xlsx",
     "TARGET_COLUMN": "Total density",
-    "COLUMNS_TO_NORMALIZE": ["Laser Power", "Hatch Distance", "X_coord", "Y_coord", "Gas flow rate in m/s", "Laser Speed"],
+    "TEST_SIZE": 0.2,
+    "RANDOM_STATE": 42,
+    "COLUMNS_TO_NORMALIZE": ["Laser Power", "Gas flow rate in m/s", "Laser Speed"],
     "HEATMAP_SAVE_PATH": "/Users/loganvega/Desktop/am_data_driven_work_flow/report/feature_correlation_heatmap.png"
 }

@@ -2,6 +2,9 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 import logging
+import os
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -64,9 +67,9 @@ class DataPreprocessor:
             logger.error(f"Error during data normalization: {e}")
             return None
 
-    def create_train_test_split(self, test_size=0.2, random_state=None):
+    def create_train_test_split(self, test_size=0.2, validation_size=0.1, random_state=None):
         """
-        Splits the data into training and testing sets.
+        Splits the data into training, validation, and testing sets.
         """
         if self.normalized_data is not None:
             X = self.normalized_data.drop(self.config['TARGET_COLUMN'], axis=1)
@@ -76,9 +79,43 @@ class DataPreprocessor:
             X = self.data.drop(self.config['TARGET_COLUMN'], axis=1)
             y = self.data[self.config['TARGET_COLUMN']]
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
-        logger.info("Train-test split completed successfully.")
-        return X_train, X_test, y_train, y_test
+        # First split: Separate out the training set
+        X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+        # Adjust validation size relative to the reduced dataset (X_temp)
+        validation_size_adjusted = validation_size / (1 - test_size)
+
+        # Second split: Split the remaining data into validation and test sets
+        X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=validation_size_adjusted,
+                                                          random_state=random_state)
+
+        logger.info("Train-validation-test split completed successfully.")
+        return X_train, X_val, X_test, y_train, y_val, y_test
+
+    def plot_data_distribution(self, save_path, nrows=2, ncols=3):
+        """Plots and saves the distribution of each feature in the dataset as subplots in one figure."""
+        if self.data is None:
+            logger.error("No data available to plot.")
+            return
+
+        num_plots = len(self.data.columns)
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(15, 10))
+        axes = axes.flatten()  # Flatten to 1D array for easy iteration
+
+        for i, column in enumerate(self.data.columns):
+            if i < num_plots:
+                sns.histplot(self.data[column], kde=True, ax=axes[i])
+                axes[i].set_title(f"Distribution of {column}")
+                axes[i].set_xlabel(column)
+                axes[i].set_ylabel("Frequency")
+            else:
+                axes[i].set_visible(False)  # Hide extra subplots
+
+        plt.tight_layout()
+        plt.savefig(save_path)
+        plt.close()
+        logger.info(f"Saved combined distribution plot to {save_path}")
+
 
 
 

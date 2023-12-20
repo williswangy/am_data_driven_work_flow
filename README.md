@@ -51,23 +51,31 @@ The following table represents the importance of each feature as determined by t
 | Y_coord               | 0.053498   |
 | X_coord               | 0.012794   |
 
+*Table 1: Feature Importance Scores from RandomForestRegressor*
+
+
 These importance scores are computed by fitting a RandomForestRegressor with a specified number of trees (`n_estimators`). Each feature's importance score is the sum of the decrease in error when the feature is used for splitting, averaged over all trees. The values are then normalized to sum to one. This analysis is crucial for understanding which features have the most predictive power for the density of AM parts.
 
 
 ### Feature Selection Justification
 
-Based on the feature importance scores and visual analysis of feature correlations and distributions, the selection criteria include:
+The selection of features is a crucial step that affects the performance of the predictive model. The decisions are made by analyzing the importance scores, the correlation of features with the target variable 'Total density', and the independence between features to mitigate multicollinearity.
 
-- **Statistical Significance**: Preference towards features with higher importance scores as they contribute more to model accuracy.
-- **Correlation with Target**: Features directly correlated with 'Total density' are likely to be more predictive.
-- **Independent Features**: Avoiding features with high inter-feature correlation to reduce multicollinearity.
+#### Criteria for Selection:
 
-#### Selected Features
+- **Statistical Significance**: Features with higher importance scores are indicative of a greater impact on model accuracy and are therefore emphasized.
+- **Correlation with Target**: Features that show a significant correlation with 'Total density' are likely to have better predictive power.
+- **Independent Features**: It is crucial to select features that exhibit low inter-feature correlation to prevent multicollinearity, which can affect model stability and interpretability.
 
-- `Laser Power` (Importance: 0.454423) and `Laser Speed` (Importance: 0.254031) are the most predictive features with sufficient variability and impact on the target variable.
-- `Hatch Distance` (Importance: 0.121952) and `Gas flow rate in m/s` (Importance: 0.103303) show potential predictive power and are less correlated with other features.
-- `Y_coord` (Importance: 0.053498) is considered for its moderate importance despite low variability.
-- `X_coord` (Importance: 0.012794) is the least important and may be excluded if model simplicity is prioritized.
+#### Detailed Performance Analysis of Selected Features:
 
-The above features are selected to optimize the model's performance while maintaining simplicity and interpretability.
+- `Laser Power` (Importance: 0.454423) stands out as the most significant predictor. The distribution plot shows a wide spread, indicating diverse data points that the model can learn from. The correlation heatmap suggests that this feature is not highly correlated with others, underlining its unique contribution to the model.
+
+- `Laser Speed` (Importance: 0.254031) is also highly regarded due to its substantial variability observed in the distribution plot, which is a desirable attribute for a predictive feature. The correlation heatmap reveals that it has a moderate positive relationship with the target variable, reinforcing its selection.
+
+- `Hatch Distance` (Importance: 0.121952) is included based on its moderate importance score and its distribution which, although less varied than 'Laser Power' and 'Laser Speed', still provides a decent amount of information. The heatmap indicates a negative correlation with 'Gas flow rate in m/s', suggesting that it captures different aspects of the data.
+
+- `Gas flow rate in m/s` (Importance: 0.103303) is chosen due to its notable contribution to model predictions and its distinctive distribution, as seen in the histograms. Despite some level of correlation with 'Hatch Distance', its unique variance justifies its inclusion.
+
+The selection of these features is expected to yield a model that accurately predicts 'Total density' while maintaining a balance between complexity and interpretability.
 

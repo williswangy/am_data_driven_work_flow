@@ -2,6 +2,11 @@ import joblib
 import numpy as np
 import pandas as pd
 from scipy import stats
+from sklearn.ensemble import RandomForestRegressor
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ModelPredictor:
     def __init__(self, model_path):
@@ -18,9 +23,9 @@ class ModelPredictor:
         """
         try:
             self.model = joblib.load(self.model_path)
-            print(f"Model loaded successfully from {self.model_path}")
+            logger.info(f"Model loaded successfully from {self.model_path}")
         except Exception as e:
-            print(f"An error occurred while loading the model: {e}")
+            logger.error(f"An error occurred while loading the model: {e}")
 
     def predict(self, X_new):
         """
@@ -33,45 +38,45 @@ class ModelPredictor:
                 predictions = self.model.predict(X_new)
                 return predictions
             except Exception as e:
-                print(f"An error occurred while making predictions: {e}")
+                logger.error(f"An error occurred while making predictions: {e}")
         else:
-            print("Model is not loaded. Call load_model() before making predictions.")
+            logger.warning("Model is not loaded. Call load_model() before making predictions.")
             return None
 
     def confidence_intervals(self, X_new, alpha=0.05):
         """
-        Calculates confidence intervals for predictions.
+        Calculates confidence intervals for RandomForest predictions.
         :param X_new: New data to make predictions on.
         :param alpha: Significance level for the intervals.
         :return: A DataFrame with lower and upper bounds of the confidence intervals.
         """
         if self.model is None:
-            print("Model is not loaded. Call load_model() before calculating confidence intervals.")
+            logger.warning("Model is not loaded. Call load_model() before calculating confidence intervals.")
             return None
 
-        # Assuming the model has a `predict` method that can return standard deviations of predictions
-        # This will be model-specific; not all models provide standard deviations of predictions
-        try:
-            predictions = self.model.predict(X_new)
-            if hasattr(self.model, 'predict_std'):
-                std_devs = self.model.predict_std(X_new)
-            else:
-                # If the model does not support prediction intervals, we need a different approach
-                print("The model does not support prediction standard deviations for confidence intervals.")
-                return None
+        if not isinstance(self.model, RandomForestRegressor):
+            logger.warning("This method is specifically tailored for RandomForestRegressor.")
+            return None
 
-            intervals = stats.norm.interval(1 - alpha, loc=predictions, scale=std_devs)
+        try:
+            # Extract individual tree predictions
+            tree_predictions = np.array([tree.predict(X_new) for tree in self.model.estimators_])
+
+            # Calculate mean and standard deviation of tree predictions
+            mean_predictions = np.mean(tree_predictions, axis=0)
+            std_devs = np.std(tree_predictions, axis=0)
+
+            # Compute the quantiles for the normal distribution
+            quantile = stats.norm.ppf(1 - alpha / 2)
+
+            # Calculate the upper and lower bounds of the confidence intervals
+            lower_bounds = mean_predictions - quantile * std_devs
+            upper_bounds = mean_predictions + quantile * std_devs
+
             return pd.DataFrame({
-                'lower_bound': intervals[0],
-                'upper_bound': intervals[1]
+                'lower_bound': lower_bounds,
+                'upper_bound': upper_bounds
             })
         except Exception as e:
-            print(f"An error occurred while calculating confidence intervals: {e}")
+            logger.error(f"An error occurred while calculating confidence intervals: {e}")
             return None
-
-# Example usage:
-# predictor = Predictor('path_to_trained_model.pkl')
-# predictor.load_model()
-# new_data = pd.DataFrame(...)  # Your new data here
-# predictions = predictor.predict(new_data)
-# confidence_intervals = predictor.confidence_intervals(new_data)

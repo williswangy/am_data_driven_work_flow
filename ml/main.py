@@ -8,7 +8,8 @@ from ml_predictor import ModelPredictor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression, Lasso
 import numpy as np
-from sklearn.metrics import mean_squared_error
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -80,3 +81,6 @@ predictor.load_model()
 predictions = predictor.predict(X_test)
 
 evaluator.evaluate_performance(predictions,y_test)
+
+confidence_intervals = predictor.confidence_intervals(X_test)
+print(confidence_intervals)

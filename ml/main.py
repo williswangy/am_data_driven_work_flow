@@ -4,8 +4,11 @@ from data_preprocessor import DataPreprocessor
 from feature_selector import FeatureSelectorAM
 from ml_trainer import ModelTrainer, ModelRegistry
 from ml_evaluator import ModelEvaluator
+from ml_predictor import ModelPredictor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression, Lasso
+import numpy as np
+from sklearn.metrics import mean_squared_error
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -38,6 +41,7 @@ selector.plot_correlation_heatmap(include_target=True, save_path=config['HEATMAP
 importance = selector.feature_importance()
 logger.info(f"Feature Importance:\n{importance}")
 
+
 # Initialize ModelRegistry and register models
 model_registry = ModelRegistry()
 models_to_use = {
@@ -53,18 +57,26 @@ for model_name, model in models_to_use.items():
 X_train, X_val, X_test, y_train, y_val, y_test = preprocessor.create_train_test_split(config['TEST_SIZE'],
                                                                                       config["VALIDATION_SIZE"],
                                                                                       config['RANDOM_STATE'])
-
+y_train_transformed = np.log1p(y_train)
+y_val_transformed = np.log1p(y_val)
 # Train, validate, and evaluate models
 trainer = ModelTrainer(model_registry)
 evaluator = ModelEvaluator(model_registry)
 
 for model_name in model_registry.models.keys():
     trainer.train_model(model_name, X_train, y_train)
-    trainer.validate_model(model_name, X_train, y_train, cv_folds=5)
+    # For k-fold cross-validation
+    #trainer.validate_model(model_name, X_train, y_train, cv_method='kfold', cv_folds=5)
+    #trainer.validate_model(model_name, X_train, y_train, cv_method='loocv')
     model_report = evaluator.generate_report(model_name,X_train, y_train, X_val, y_val)
     logger.info(f"{model_name} Model Performance Report:\n" + model_report)
 
-    # Train and evaluate models with bagging
-    # trainer.train_model_with_bagging(model_name, X_train, y_train, n_bootstrap=10)
-    # bagged_report = evaluator.generate_report_bagging(X_train, y_train, X_test, y_test)
-    # logger.info(f"{model_name} Bagging Model Performance Report:\n" + bagged_report)
+    # if model_name == 'RandomForest':
+    #     trainer.save_model(model_name, config['MODEL_SAVE_PATH'])
+
+
+predictor = ModelPredictor(config['MODEL_SAVE_PATH'])
+predictor.load_model()
+predictions = predictor.predict(X_test)
+
+evaluator.evaluate_performance(predictions,y_test)

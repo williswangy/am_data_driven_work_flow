@@ -60,20 +60,19 @@ class ModelEvaluator:
 
         return report
 
-    def generate_report_bagging(self, model_name, X_train, y_train, X_val, y_val):
-        """Generate a report of model performance metrics for bagging."""
-        train_mse, train_r2 = self.calculate_accuracy_bagging(model_name, X_train, y_train)
-        val_mse, val_r2 = self.calculate_accuracy_bagging(model_name, X_val, y_val)
+    def evaluate_performance(self, predictions, y_true):
+        """Evaluate model performance given predictions and true values."""
+        try:
+            # Calculate MSE and R² using the predictions and true values
+            mse = mean_squared_error(y_true, predictions)
+            r2 = r2_score(y_true, predictions)
 
-        report = (
-            f"{model_name} Model Performance Report (Bagging):\n"
-            f"Training MSE: {train_mse}, Training R²: {train_r2}\n"
-            f"Validation MSE: {val_mse}, Validation R²: {val_r2}\n"
-        )
+            # Log the performance
+            logger.info(f"Performance - MSE: {mse}, R²: {r2}")
 
-        if train_mse < val_mse:
-            report += "Warning: Model may be overfitting to the training data."
-        else:
-            report += "No significant overfitting detected."
+            # Return the performance metrics
+            return mse, r2
+        except Exception as e:
+            logger.error(f"Error evaluating performance: {e}")
+            return None, None
 
-        return report

@@ -92,24 +92,26 @@ class DataPreprocessor:
         logger.info("Train-validation-test split completed successfully.")
         return X_train, X_val, X_test, y_train, y_val, y_test
 
-    def plot_data_distribution(self, save_path, nrows=2, ncols=3):
+    def plot_data_distribution(self, save_path, nrows=3, ncols=3):
         """Plots and saves the distribution of each feature in the dataset as subplots in one figure."""
         if self.data is None:
             logger.error("No data available to plot.")
             return
 
         num_plots = len(self.data.columns)
-        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(15, 10))
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(15, 12))  # Adjust figsize if needed
         axes = axes.flatten()  # Flatten to 1D array for easy iteration
 
+        # Plot each column in its subplot
         for i, column in enumerate(self.data.columns):
-            if i < num_plots:
-                sns.histplot(self.data[column], kde=True, ax=axes[i])
-                axes[i].set_title(f"Distribution of {column}")
-                axes[i].set_xlabel(column)
-                axes[i].set_ylabel("Frequency")
-            else:
-                axes[i].set_visible(False)  # Hide extra subplots
+            sns.histplot(self.data[column], kde=True, ax=axes[i])
+            axes[i].set_title(f"Distribution of {column}")
+            axes[i].set_xlabel(column)
+            axes[i].set_ylabel("Frequency")
+
+        # Hide unused subplots
+        for j in range(i + 1, nrows * ncols):
+            axes[j].set_visible(False)
 
         plt.tight_layout()
         plt.savefig(save_path)

@@ -2,6 +2,7 @@ import pandas as pd
 import logging
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.feature_selection import RFE
 import os
 
 from sklearn.ensemble import RandomForestRegressor
@@ -49,3 +50,16 @@ class FeatureSelectorAM:
             return importance.sort_values(ascending=False)
         except Exception as e:
             logger.error(f"Failed to calculate feature importance: {e}")
+
+    def recursive_feature_elimination(self, estimator, n_features_to_select=5):
+        """
+        Performs Recursive Feature Elimination (RFE) to select top features.
+        """
+        try:
+            rfe = RFE(estimator=estimator, n_features_to_select=n_features_to_select)
+            rfe.fit(self.features, self.target)
+            selected_features = self.features.columns[rfe.support_]
+            logger.info("Recursive feature elimination completed successfully.")
+            return selected_features
+        except Exception as e:
+            logger.error(f"Failed to perform recursive feature elimination: {e}")

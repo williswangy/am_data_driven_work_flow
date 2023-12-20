@@ -181,6 +181,7 @@ def train_and_evaluate_models(preprocessor, config):
 
     for model_name in model_registry.models.keys():
         trainer.train_model(model_name, X_train, y_train)
+        #trainer.validate_model(model_name, X_train, y_train, cv_method='kfold', cv_folds=5)
         model_report = evaluator.generate_report(model_name, X_train, y_train, X_val, y_val)
         logger.info(f"{model_name} Model Performance Report:\n" + model_report)
 

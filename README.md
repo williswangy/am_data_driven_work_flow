@@ -79,3 +79,49 @@ The selection of features is a crucial step that affects the performance of the 
 
 The selection of these features is expected to yield a model that accurately predicts 'Total density' while maintaining a balance between complexity and interpretability.
 
+
+
+
+## Model Performance Comparison
+
+The table below presents a comparison of the RandomForest, LinearRegression, and Lasso models based on Mean Squared Error (MSE) and R-squared (R²).
+
+| Model             | Training MSE          | Training R²          | Validation MSE       | Validation R²        |
+|-------------------|-----------------------|----------------------|----------------------|----------------------|
+| RandomForest      | 0.1092448306896582    | 0.9127221214412975   | 0.04174671333333727  | 0.8758478011205404   |
+| LinearRegression  | 1.0956012821135823    | 0.1247022394980919   | 0.3671354552990021   | -0.09183862446923996 |
+| Lasso             | 1.2126750879999653    | 0.031169636188156602 | 0.3267284658391647   | 0.028329316692535023 |
+
+*Table 2: Training and Validation Performance Metrics for Predictive Models with selected features*
+
+These metrics indicate the RandomForest model's superior performance in terms of both MSE and R², suggesting it is more accurate and a better fit for the data. LinearRegression and Lasso, while valuable for comparative analysis, show less favorable results, particularly in their lower R² values.
+
+### Understanding MSE and R²:
+
+- **Mean Squared Error (MSE)**: This metric measures the average squared difference between the observed actual and predicted values. A lower MSE indicates a more accurate model.
+
+- **R-squared (R²)**: This is the proportion of variance in the dependent variable that can be explained by the independent variables. R² closer to 1 indicates a stronger correlation between the observed and predicted values.
+
+### Model Selection Justification:
+
+- **RandomForest Regression** was selected as the primary model due to its superior performance in both MSE and R². This model's non-parametric nature allows it to effectively handle the right-skewed distribution of the target variable and capture complex relationships within a small dataset (84 data points).
+
+- **Linear Regression and Lasso** were utilized for comparative testing. Although they provided valuable insights, their performance metrics were notably inferior to the RandomForest model. Linear Regression, with a negative R² value on validation, indicated a poor fit for the data, while Lasso showed only marginal improvement.
+
+The RandomForest model's robustness to the distributional characteristics of the data and its ability to handle non-linear relationships makes it the most suitable choice for accurately predicting 'Total density' in AM parts.
+
+### Understanding RandomForest Regression
+
+Imagine RandomForest Regression as a team of experts where each expert (a "tree") specializes in different aspects of the problem. Here's a simple breakdown of how it works:
+
+#### Concept:
+- Think of RandomForest as a team decision rather than a decision made by one person. It combines the knowledge of multiple experts to make a better prediction.
+
+#### Process:
+1. **Creating Experts (Trees)**: The algorithm creates several experts. Each expert looks at the problem (the data) in its own unique way. This is like creating a diverse team where each member brings different insights.
+
+2. **Each Expert Learns Differently**: Instead of each expert looking at the whole picture, they focus on specific parts. This way, they become specialized in understanding different areas of the data.
+
+3. **Making a Group Decision**: When it's time to make a prediction, each expert gives their opinion. The RandomForest model then averages these opinions to come up with a final decision. It's like pooling together different expert opinions to get a more balanced and accurate answer.
+
+4. **Avoiding Bias**: One great thing about RandomForest is that it avoids getting too fixated on specific patterns in the data (which might be misleading). This is like ensuring the team doesn't rely too much on one expert's opinion, thus avoiding bias.

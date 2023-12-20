@@ -5,7 +5,7 @@
     "VALIDATION_SIZE": 0.1,
     "RANDOM_STATE": 42,
     "MODEL_SAVE_PATH": "/Users/loganvega/Desktop/am_data_driven_work_flow/saved_models/model.pkl",
-    "COLUMNS_TO_NORMALIZE": ["Laser Power", "Hatch Distance", "Gas flow rate in m/s","X_coord","Y_coord", "Laser Speed"],
+    "COLUMNS_TO_NORMALIZE": ["Laser Power", "Hatch Distance", "Gas flow rate in m/s", "Laser Speed"],
     "HEATMAP_SAVE_PATH": "/Users/loganvega/Desktop/am_data_driven_work_flow/report/feature_correlation_heatmap.png",
     "FREQUENCY_PLOT_SAVE_PATH": "/Users/loganvega/Desktop/am_data_driven_work_flow/report/feature_frequency_plot.png"
 }

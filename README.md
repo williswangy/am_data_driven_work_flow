@@ -1,4 +1,4 @@
-# AM Parts Density Prediction - Machine Learning Approach
+# AM Parts Density Prediction - Data Science Approach
 
 ## Overview
 I developed a comprehensive machine learning pipeline to predict the density of Additive Manufacturing (AM) parts. This document outlines our data-driven approach, detailing each stage of the pipeline from data preprocessing to model training and evaluation.
@@ -27,5 +27,47 @@ I developed a comprehensive machine learning pipeline to predict the density of 
    - **Confidence Interval Calculation**: For RandomForest, calculates confidence intervals for the predictions.
 
 
-## Conclusion
-Our machine learning pipeline offers a systematic and data-driven approach to predict the density of AM parts. Through careful preprocessing, feature selection, and model evaluation, we ensure the accuracy and reliability of our predictions. The choice of the Random Forest model, guided by empirical evidence, stands as a testament to our commitment to leveraging advanced analytics in manufacturing.
+## Experiments
+
+### How will you select the most relevant features? Justify your answer
+#### Feature Correlation Heatmap
+![Feature Correlation Heatmap](report/feature_correlation_heatmap.png)
+*Figure 1: Heatmap displaying the correlation between different features used in the model.*
+
+#### Feature Frequency Plot
+![Feature Frequency Plot](report/feature_frequency_plot.png)
+*Figure 2: Frequency distribution plots for each feature, illustrating the variability within the dataset.*
+
+### Feature Importance Analysis
+
+The following table represents the importance of each feature as determined by the `RandomForestRegressor`. The importance is calculated by how much each feature contributes to the improvement of the model's predictions. The higher the value, the more important the predictor.
+
+| Feature               | Importance |
+|-----------------------|------------|
+| Laser Power           | 0.454423   |
+| Laser Speed           | 0.254031   |
+| Hatch Distance        | 0.121952   |
+| Gas flow rate in m/s  | 0.103303   |
+| Y_coord               | 0.053498   |
+| X_coord               | 0.012794   |
+
+These importance scores are computed by fitting a RandomForestRegressor with a specified number of trees (`n_estimators`). Each feature's importance score is the sum of the decrease in error when the feature is used for splitting, averaged over all trees. The values are then normalized to sum to one. This analysis is crucial for understanding which features have the most predictive power for the density of AM parts.
+
+
+### Feature Selection Justification
+
+Based on the feature importance scores and visual analysis of feature correlations and distributions, the selection criteria include:
+
+- **Statistical Significance**: Preference towards features with higher importance scores as they contribute more to model accuracy.
+- **Correlation with Target**: Features directly correlated with 'Total density' are likely to be more predictive.
+- **Independent Features**: Avoiding features with high inter-feature correlation to reduce multicollinearity.
+
+#### Selected Features
+
+- `Laser Power` (Importance: 0.454423) and `Laser Speed` (Importance: 0.254031) are the most predictive features with sufficient variability and impact on the target variable.
+- `Hatch Distance` (Importance: 0.121952) and `Gas flow rate in m/s` (Importance: 0.103303) show potential predictive power and are less correlated with other features.
+- `Y_coord` (Importance: 0.053498) is considered for its moderate importance despite low variability.
+- `X_coord` (Importance: 0.012794) is the least important and may be excluded if model simplicity is prioritized.
+
+The above features are selected to optimize the model's performance while maintaining simplicity and interpretability.
+

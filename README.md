@@ -3,6 +3,11 @@
 ## Overview
 I developed a comprehensive machine learning pipeline to predict the density of Additive Manufacturing (AM) parts. This document outlines our data-driven approach, detailing each stage of the pipeline from data preprocessing to model training and evaluation.
 
+## Structure
+- ** data ** : dataset
+- ** ml ** : contains entire data science workflow
+- ** report ** : contains the useful figures
+- ** saved_models** : contains the saved model
 ## Pipeline Stages
 
 ### 1. Data Preprocessing (`data_preprocessor.py`)

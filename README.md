@@ -220,3 +220,12 @@ After conducting cross-validation and then training the tuned RandomForest model
 
 These results represent the tuned RandomForest model's prediction accuracy and its ability to explain the variance in the test dataset. The performance metrics reflect the model's effectiveness after thorough validation and training procedures.
 
+###  ML models are hard to interpret. Which techniques might we use for sensitivity analysis to help in rationalising the model predictions
+1. Feature Important Anaysios
+2. Partial Dependence Plots (PDPs): These plots show the relationship between a feature and the predicted outcome, keeping other features constant.
+3. SHAP (SHapley Additive exPlanations): SHAP values explain the prediction of an instance by computing the contribution of each feature.
+
+###  Small experimental datasets are common in the material industry but ML models struggle with sparse datasets. Whichtechniques can we use to mitigate this challenge?
+1. Data Augmentation
+2. Cross Validation (loov): This has been demonstrat its effience in my code
+

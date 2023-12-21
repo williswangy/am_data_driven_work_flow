@@ -125,3 +125,70 @@ Imagine RandomForest Regression as a team of experts where each expert (a "tree"
 3. **Making a Group Decision**: When it's time to make a prediction, each expert gives their opinion. The RandomForest model then averages these opinions to come up with a final decision. It's like pooling together different expert opinions to get a more balanced and accurate answer.
 
 4. **Avoiding Bias**: One great thing about RandomForest is that it avoids getting too fixated on specific patterns in the data (which might be misleading). This is like ensuring the team doesn't rely too much on one expert's opinion, thus avoiding bias.
+
+### Overfitting and Generalisability in RandomForest Models
+
+#### Addressing Overfitting in RandomForest
+Overfitting occurs when a machine learning model captures noise or random fluctuations in the training data rather than the underlying pattern, leading to poor performance on unseen data. RandomForest, an ensemble learning technique, is generally robust against overfitting due to its nature of aggregating results from multiple decision trees. However, it's still crucial to implement strategies to ensure the model is not overly complex and is generalizable.
+
+##### Techniques Used:
+1. **Hyperparameter Tuning**: Adjusting parameters such as the number of trees (`n_estimators`), maximum depth of trees (`max_depth`), and the minimum number of samples required to split a node (`min_samples_split`). These parameters help control the complexity of the model.
+2. **Bootstrapping and Aggregation**: RandomForest uses bootstrapping (sampling with replacement) for tree construction and aggregates their predictions. This method naturally guards against overfitting.
+
+#### Ensuring Generalisability with Cross-Validation
+To ensure the model's generalizability and robustness:
+
+##### K-Fold Cross-Validation:
+- **Method**: The dataset is divided into 'k' subsets. The model is trained on 'k-1' subsets and validated on the remaining subset. This process is repeated 'k' times, with each subset used exactly once as the validation data.
+- **Advantage**: It provides a thorough assessment over different subsets, giving a more holistic view of the model's performance.
+- **Application**: This method was applied to the RandomForest model to evaluate its performance across various splits of the dataset, ensuring that the model's accuracy is consistent and not just tailored to a specific subset of data.
+
+##### Leave-One-Out Cross-Validation (LOOCV):
+- **Method**: A special case of k-fold cross-validation where 'k' is equal to the number of data points. Each time, the model is trained on all data points except one and validated on the left-out data point.
+- **Advantage**: It uses almost all data for training, making it a good choice for small datasets. It also reduces bias in model assessment.
+- **Application**: LOOCV was also used for the RandomForest model, particularly beneficial for fine-grained assessment when the dataset size is limited.
+
+#### Conclusion
+In conclusion, by carefully tuning hyperparameters, and employing rigorous cross-validation techniques like k-fold and LOOCV, the RandomForest model's tendency to overfit is significantly mitigated. These steps ensure that the model not only performs well on the training data but also generalizes effectively to new, unseen data. This balanced approach makes RandomForest a reliable and robust choice for predictive modeling tasks.
+
+
+
+## Best Hyperparameters for RandomForest
+
+| Parameter         | Value |
+|-------------------|-------|
+| `max_depth`       | 10    |
+| `max_features`    | sqrt  |
+| `min_samples_split` | 2   |
+| `n_estimators`    | 100   |
+
+## TunedRandomForest Cross-Validation Performance
+
+| Fold  | MSE Score    | R² Score     |
+|-------|--------------|--------------|
+| 1     | 2.10034339   | 0.05110565   |
+| 2     | 2.74699014   | 0.07753773   |
+| 3     | 0.08985296   | 0.52991261   |
+| 4     | 0.13875415   | -1.16926619  |
+| 5     | 0.18696119   | -0.34926427  |
+| **Average** | **1.0525803667612172** | **-0.17199489302890097** |
+
+## TunedRandomForest LOOCV MSE Scores
+
+| Folds   | MSE Scores                                    |
+|---------|-----------------------------------------------|
+| 1-5     | 7.83, 5.13, 0.03, 0.12, 0.21                 |
+| 6-10    | 0.08, 1.73, 0.85, 0.09, 0.37                 |
+| 11-15   | 0.01, 0.22, 1.46, 0.04, 0.29                 |
+| 16-20   | 1.59, 28.17, 0.04, 0.02, 0.03                |
+| 21-25   | 0.22, 0.29, 0.16, 0.54, 0.24                 |
+| 26-30   | 0.01, 0.003, 0.002, 0.01, <0.00001           |
+| 31-35   | 0.02, 0.48, 0.20, 0.0008, 0.33               |
+| 36-40   | 0.01, 0.76, 0.004, 0.02, 0.36                |
+| 41-45   | 1.28, 0.11, 0.001, 0.05, 0.07                |
+| 46-50   | 0.02, 0.01, 0.02, 0.29, <0.0001              |
+| 51-55   | 0.26, 0.06, 0.55, 0.02, 0.03                 |
+| 56-58   | 0.09, 0.63, 0.006                            |
+
+**Average MSE Score**: 0.956771652622797
+

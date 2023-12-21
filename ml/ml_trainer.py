@@ -90,7 +90,7 @@ class ModelTrainer:
 
     def validate_model(self, model_name, X, y, cv_method='kfold', cv_folds=5):
         """
-        Validate a model using cross-validation.
+        Validate a model using cross-validation, reporting both MSE and R-squared scores.
 
         Parameters:
         model_name (str): The name of the model to validate.
@@ -98,8 +98,6 @@ class ModelTrainer:
         y: Data labels for validation.
         cv_method (str): The method of cross-validation ('kfold' or 'loocv').
         cv_folds (int): Number of folds for k-fold cross-validation.
-
-        Outputs cross-validation mean squared error scores to the logger.
         """
         try:
             model = self.model_registry.get(model_name)
@@ -107,10 +105,16 @@ class ModelTrainer:
                 cv = LeaveOneOut()
             else:
                 cv = cv_folds
-            scores = cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error')
-            mse_scores = -scores
+
+            # Calculate negative MSE scores
+            mse_scores = -cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error')
             logger.info(f"{model_name} Cross-Validation MSE Scores: {mse_scores}")
             logger.info(f"{model_name} Average MSE Score: {np.mean(mse_scores)}")
+
+            # Calculate R-squared scores
+            r2_scores = cross_val_score(model, X, y, cv=cv, scoring='r2')
+            logger.info(f"{model_name} Cross-Validation R² Scores: {r2_scores}")
+            logger.info(f"{model_name} Average R² Score: {np.mean(r2_scores)}")
         except Exception as e:
             logger.error(f"Error during {model_name} model validation: {e}")
 
@@ -128,3 +132,5 @@ class ModelTrainer:
             logger.info(f"{model_name} model saved to {file_path}")
         except Exception as e:
             logger.error(f"Error saving the {model_name} model: {e}")
+
+

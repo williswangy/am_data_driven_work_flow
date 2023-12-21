@@ -101,6 +101,11 @@ class ModelPredictor:
             lower_bounds = mean_predictions - quantile * std_devs
             upper_bounds = mean_predictions + quantile * std_devs
 
+            # Clip the confidence intervals to the maximum allowed value (e.g., 100 for density)
+            lower_bounds = np.clip(lower_bounds, 0, 100)
+            upper_bounds = np.clip(upper_bounds, 0, 100)
+
+
             return pd.DataFrame({
                 'lower_bound': lower_bounds,
                 'upper_bound': upper_bounds

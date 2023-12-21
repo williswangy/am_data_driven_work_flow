@@ -148,11 +148,6 @@ To ensure the model's generalizability and robustness:
 - **Advantage**: It uses almost all data for training, making it a good choice for small datasets. It also reduces bias in model assessment.
 - **Application**: LOOCV was also used for the RandomForest model, particularly beneficial for fine-grained assessment when the dataset size is limited.
 
-#### Conclusion
-In conclusion, by carefully tuning hyperparameters, and employing rigorous cross-validation techniques like k-fold and LOOCV, the RandomForest model's tendency to overfit is significantly mitigated. These steps ensure that the model not only performs well on the training data but also generalizes effectively to new, unseen data. This balanced approach makes RandomForest a reliable and robust choice for predictive modeling tasks.
-
-
-
 ## Best Hyperparameters for RandomForest
 
 | Parameter         | Value |
@@ -191,4 +186,37 @@ In conclusion, by carefully tuning hyperparameters, and employing rigorous cross
 | 56-58   | 0.09, 0.63, 0.006                            |
 
 **Average MSE Score**: 0.956771652622797
+
+## Advantages of Model Evaluation with Small Dataset
+
+- **Effectiveness of LOOCV**: 
+  - With a dataset of 84 points, LOOCV maximizes training data usage for each validation step, providing a comprehensive assessment of the model's performance.
+
+- **Data Utilization**: 
+  - Utilizing 70% of the dataset for training is crucial in a small dataset to capture underlying data patterns effectively.
+
+- **Insightful Model Assessment**: 
+  - The variability in MSE and R² scores across different folds offers valuable insights into the model's performance on various data subsets.
+
+- **Opportunity for Focused Tuning**: 
+  - Cross-validation results provide clear guidance for model tuning, especially in adapting the model to handle the dataset more effectively.
+
+In summary, LOOCV and strategic training data allocation offer significant advantages in assessing and refining the model, particularly for small datasets. These methods provide detailed insights for effective model improvement.
+
+
+### Quantify the uncertainty associated with model predictions (confidence intervals)?
+
+In `ml_predictor.py`, the `confidence_intervals` function is designed to quantify the uncertainty of RandomForestRegressor predictions. It achieves this by first extracting individual tree predictions for new data points (`X_new`) and then calculating their mean and standard deviation. The function computes quantiles based on the specified significance level (`alpha` = 0.05) using the normal distribution. Confidence intervals are determined by adjusting the mean predictions with the quantile-scaled standard deviation. To account for natural data limits (e.g., density not exceeding 100), the function employs `numpy.clip` to ensure the interval bounds remain within realistic ranges. The output is a DataFrame presenting the lower and upper bounds of these confidence intervals, thus quantifying the prediction uncertainty of the RandomForestRegressor model.
+
+![Confidence Plot](report/predictions_with_clipped_confidence_intervals.png)
+*Figure 3: Confidence_interval_results at alpha = 0.05*
+
+## Tuned RandomForest Model Performance After Cross-Validation
+
+After conducting cross-validation and then training the tuned RandomForest model on the entire training set, the performance metrics on the test data are as follows:
+
+- **Mean Squared Error (MSE)**: `0.881555774998438`
+- **R-squared (R²) Score**: `0.30901051694631876`
+
+These results represent the tuned RandomForest model's prediction accuracy and its ability to explain the variance in the test dataset. The performance metrics reflect the model's effectiveness after thorough validation and training procedures.
 

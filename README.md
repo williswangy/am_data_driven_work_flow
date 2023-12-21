@@ -232,5 +232,5 @@ These results represent the tuned RandomForest model's prediction accuracy and i
 
 ###  Small experimental datasets are common in the material industry but ML models struggle with sparse datasets. Whichtechniques can we use to mitigate this challenge?
 1. Data Augmentation
-2. Cross Validation (loov): This has been demonstrat its effience in my code
+2. Cross Validation (loocv): This has been demonstrat its effience in my code
 
